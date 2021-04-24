@@ -1,7 +1,9 @@
 # Digital Design
+Implemented Digital Circuit Designs in VHDL
+
 Simulated Circuits Using DO Script in Modelsim
 
-Synthesized Circuits Using TCL and XDC Scripts in Vivado, Written in VHDL
+Synthesized Circuits Using TCL and XDC Scripts in Vivado
 
 ## Sum of Min Terms
 - Implemented a Sum of Min Terms Circuit using Processes 
