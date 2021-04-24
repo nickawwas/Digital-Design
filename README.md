@@ -1,5 +1,6 @@
 # Digital Design
-Simulated Circuits Using DO Script in Modelsim 
+Simulated Circuits Using DO Script in Modelsim
+
 Synthesized Circuits Using TCL and XDC Scripts in Vivado, Written in VHDL
 
 ## Sum of Min Terms
