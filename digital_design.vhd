@@ -76,23 +76,23 @@ architecture alu of alu_enty is
 begin
     -- Logical Unit
     with opcode select
-        outlogic <= not a when "0000" else,
-                    not b when "0001" else,
-                    a AND b when "0010" else,
-                    a OR b when "0011" else,
-                    a NAND b when "0100" else,
-                    a NOR b when "0110" else,
+        outlogic <= not a when "0000" else
+                    not b when "0001" else
+                    a AND b when "0010" else
+                    a OR b when "0011" else
+                    a NAND b when "0100" else
+                    a NOR b when "0110" else
                     a XNOR b when others;
 
     --Arithmetic Unit
     with opcode select
-        outarith <= a when "1000" else,
-                    b when "1001" else,
-                    std_logic_vector(signed(a) + 1) when "1010" else,
-                    std_logic_vector(signed(b) + 1) when "1011" else,
-                    std_logic_vector(signed(a) - 1) when "1100" else,
-                    std_logic_vector(signed(b) - 1) NAND b when "1101" else,
-                    std_logic_vector(signed(a) + signed(b)) when "1110" else,
+        outarith <= a when "1000" else
+                    b when "1001" else
+                    std_logic_vector(signed(a) + 1) when "1010" else
+                    std_logic_vector(signed(b) + 1) when "1011" else
+                    std_logic_vector(signed(a) - 1) when "1100" else
+                    std_logic_vector(signed(b) - 1) NAND b when "1101" else
+                    std_logic_vector(signed(a) + signed(b)) when "1110" else
                     std_logic_vector(signed(a) + signed(b) + signed(cin)) when others;
 
     --Mux
@@ -238,3 +238,107 @@ begin
     -- Output Logic
     q <= r_reg ;
 end johnson;
+
+-- Calculator Solution
+entity calc_16_bit is 
+port(
+    op0, op1: in std_logic_vector(15 downto 0);
+    mode: in std_logic_vector(3 downto 0);
+    res: out std_logic_vector(15 downto 0)
+);
+end calc_16_bit;
+
+architecture calc_arch of calc_16_bit is 
+begin
+    if mode = "1111" then
+        res <= op0 + 1;
+    elsif mode = "1110" then
+        res <= op1 + 1;
+    elsif mode = "1101" then
+        res <= op0 NOR op1;
+    elsif mode = "1100" then
+        res <= op0 XOR op1;
+    elsif mode = "1011" then
+        res <= op0 sll to_integer(unsigned(op1(15 downto 12)));
+    elsif mode = "1010" then
+        res <= op0 srl to_integer(unsigned(op1(15 downto 12)));
+    elsif mode = "1001" then
+        res <= op0 - op1;
+    elsif mode = "1000" then
+       res <= op0 + op1;
+    else
+        res <= others => '0';
+    end if;
+end calc_arch;
+
+-- Full Adder Implementation
+entity fullAdderEnty is
+    port(
+        a, b: in std_logic_vector(15 downto 0);
+        sum : out std_logic_vector(15 downto 0)
+    );
+end fullAdderEnty;
+
+architecture fullAdder of fullAdderEnty is
+    -- Carry and Half Adder Signals
+    signal c, ha : std_logic;
+begin
+    for i in (15 downto 0) loop
+        ha <= a(i) xor b(i);
+        sum(i) <= ha xor c;
+        c <= a(i) and b(i) or ha and c;
+    end loop;
+end fullAdder;
+
+-- Precise Laser Using Moore State Machine
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity laser_enty is
+    port(
+        b: in std_logic
+        x : out std_logic
+    );
+end laser_enty;
+
+architecture precise_laser of laser_enty is
+    type states is (OFF, ON1, ON2, ON3, ON4, ON5, ON6);
+    signal r_reg, r_next : states;
+begin
+    -- D FF
+    process(clk) 
+    begin
+        if clk'event and clk = '1' then
+            r_reg <= r_next;
+        end if;
+    end process;
+
+    -- Moore - Next State Logic
+    process(r_reg)
+    begin
+        -- Default State
+        r_next <= OFF;
+        
+        case r_reg is 
+            when OFF is
+                if b = '1' then
+                    r_next <= ON1;
+                end if;
+            when ON1 is
+                r_next <= ON2;
+            when ON2 is 
+                r_next <= ON2;
+            when ON3 is 
+                r_next <= ON4;
+            when ON4 is
+                r_next <= ON5;
+            when ON5 is
+                r_next <= ON6;            
+            when ON6 is
+                r_next <= OFF;
+        end case;
+    end process;
+
+    -- Output Logic
+    x <= '0' when r_reg = OFF else '1';
+end precise_laser;
