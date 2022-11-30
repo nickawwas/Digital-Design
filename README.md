@@ -21,4 +21,4 @@ Synthesized Circuits Using TCL and XDC Scripts in Vivado
 
 ## Serial Adder
 - Implemented a Serial Adder using Synchronous Design Methodology
-- Translated Behavioral Description of Circuit into Behavioral VHDL Code
+- Translated Behavioral Description of Circuit into Hierarchical VHDL Code
